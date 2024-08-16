@@ -1,8 +1,16 @@
-import { Entity, Column, ManyToOne, JoinTable, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  ManyToOne,
+  JoinTable,
+  OneToMany,
+  ManyToMany,
+} from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Like } from 'src/likes/entities/like.entity';
 import { Basic } from 'src/core/entities/basic.entitiy';
 import { Comment } from 'src/comments/entities/comment.entity';
+import { Tag } from 'src/tags/entities/tag.entity';
 
 @Entity()
 export class Post extends Basic {
@@ -34,4 +42,8 @@ export class Post extends Basic {
 
   @OneToMany(() => Comment, (comment) => comment.post)
   comments: Comment[];
+
+  @ManyToMany(() => Tag, (tag) => tag.posts, { cascade: true })
+  @JoinTable()
+  tags: Tag[]; // 태그와의 다대다 관계 설정
 }

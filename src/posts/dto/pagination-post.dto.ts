@@ -12,13 +12,13 @@ export class PageOptionsDto {
   @IsOptional()
   readonly take?: number = 10;
 
-  @Type(() => String)
-  @IsOptional()
-  userId?: string = '';
+  // @Type(() => String)
+  // @IsOptional()
+  // userId?: string = '';
 
   @Type(() => String)
   @IsOptional()
-  userEmail?: string = '';
+  userEmail?: string = 'test@test.com';
 
   get skip() {
     return this.page <= 0 ? (this.page = 0) : (this.page - 1) * this.take;

@@ -14,6 +14,8 @@ import { UsersModule } from './users/users.module';
 import { CommentsModule } from './comments/comments.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from './core/config/typeorm.config';
+import { OpenaiModule } from './openai/openai.module';
+import { TagsModule } from './tags/tags.module';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { TypeOrmConfigService } from './core/config/typeorm.config';
     PostsModule,
     LikesModule,
     CommentsModule,
+    OpenaiModule,
+    TagsModule,
   ],
   controllers: [AppController],
   providers: [

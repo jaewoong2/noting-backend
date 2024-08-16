@@ -9,7 +9,12 @@ import { PageOptionsDto } from './dto/pagination-post.dto';
 import { PageDto } from './dto/page.dto';
 import { PageMetaDto } from './dto/page-meta.dto';
 import { plainToInstance } from 'class-transformer';
-import { GetPostResponseDto } from './dto/get-post-response.dto';
+import {
+  CreatePostResponseDto,
+  GetPostResponseDto,
+} from './dto/get-post-response.dto';
+import { OpenaiService } from 'src/openai/openai.service';
+import { TagsService } from 'src/tags/tags.service';
 
 @Injectable()
 export class PostsService {
@@ -17,22 +22,20 @@ export class PostsService {
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>,
     private readonly userService: UsersService,
+    private readonly tagService: TagsService,
+    private readonly openAIService: OpenaiService,
   ) {}
 
   async create(createPostDto: CreatePostDto) {
-    const {
-      description,
-      title,
-      user: userInformation,
-      messageId,
-    } = createPostDto;
+    const { description, user: userInformation, messageId } = createPostDto;
+
     // 트랜잭션 사용
     return await this.postRepository.manager.transaction(
       async (transactionalEntityManager) => {
         const post = transactionalEntityManager.create(Post);
 
         // 데이터 유효성 검사
-        if (!description || !title || !userInformation.email) {
+        if (!description || !userInformation.email) {
           throw new Error('Invalid input data');
         }
 
@@ -45,14 +48,22 @@ export class PostsService {
           throw new Error('Group or User not found');
         }
 
+        const { getTitle } = this.openAIService.useOpenAPI();
+        const results = await getTitle(description);
+
         post.user = user;
         post.description = description;
-        post.title = title;
+        post.title = results.message.content;
         post.messageId = messageId;
+        post.tags = [
+          await this.tagService.findOrCreateTag(
+            results.message.content.match(/\[(.*?)\]/)[1],
+          ),
+        ];
 
         const result = await transactionalEntityManager.save(post);
 
-        return result;
+        return plainToInstance(CreatePostResponseDto, result);
       },
     );
   }
@@ -80,6 +91,10 @@ export class PostsService {
     const last_page = pageMetaDto.last_page;
 
     const result = plainToInstance(GetPostResponseDto, posts, {});
+
+    if (result.length === 0) {
+      return new PageDto(result, pageMetaDto);
+    }
 
     if (last_page >= pageMetaDto.page) {
       return new PageDto(result, pageMetaDto);

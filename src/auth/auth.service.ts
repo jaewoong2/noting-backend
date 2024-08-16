@@ -42,9 +42,9 @@ export class AuthService {
   }
 
   async googleLogin(req): Promise<any> {
-    const { email, firstName, lastName, photo } = req.user;
+    const { email, firstName, lastName, photo, userName } = req.user;
 
-    const fullName = firstName + lastName;
+    const fullName = userName ? userName : firstName + lastName;
     const user: User = await this.findByEmailOrSave(
       email,
       fullName,
@@ -66,6 +66,7 @@ export class AuthService {
 
   async signUp(
     avartar: string,
+    email: string,
     userName: string,
     provider: 'google' | 'kakao' | 'naver' | 'email',
   ): Promise<{ access_token: string }> {
@@ -73,9 +74,10 @@ export class AuthService {
     user.avatar = avartar;
     user.userName = userName;
     user.provider = provider;
+    user.email = email;
     const result = await this.usersService.createUser(user);
 
-    const payload = { userName: user.userName, id: user.id };
+    const payload = { userName: user.userName, id: user.id, email: user.email };
     return {
       ...result,
       access_token: this.jwtService.sign(payload),

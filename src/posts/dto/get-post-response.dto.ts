@@ -32,3 +32,9 @@ export class GetPostResponseDto {
   @Type(() => Comment)
   comments: Comment[];
 }
+
+export class CreatePostResponseDto {
+  data: {
+    id: string;
+  };
+}

@@ -1,10 +1,11 @@
 // src/users/dto/create-user.dto.ts
-import { IsObject, IsString } from 'class-validator';
-import { User } from 'src/users/entities/user.entity';
+import { IsObject, IsOptional, IsString } from 'class-validator';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
 export class CreatePostDto {
   @IsString()
-  title: string;
+  @IsOptional()
+  title?: string;
 
   @IsString()
   description: string;
@@ -13,5 +14,5 @@ export class CreatePostDto {
   messageId: string;
 
   @IsObject()
-  user: User;
+  user: CreateUserDto;
 }

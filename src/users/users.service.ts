@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, FindOneOptions, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import { generateRandomNickname } from 'src/core/utils/create-nickname';
 
 @Injectable()
 export class UsersService {
@@ -24,11 +25,25 @@ export class UsersService {
     return user;
   }
 
+  async createNickname() {
+    const nickname = generateRandomNickname();
+
+    const user = await this.userRepository.findOne({
+      where: { userName: nickname },
+    });
+
+    if (user) {
+      return this.createNickname();
+    }
+
+    return nickname;
+  }
+
   async createUser(user: CreateUserDto) {
     const newUser = this.userRepository.create();
 
     newUser.avatar = user.avatar;
-    newUser.userName = user.userName;
+    newUser.userName = await this.createNickname();
     newUser.email = user.email;
 
     return await this.userRepository.manager.transaction(
@@ -41,7 +56,7 @@ export class UsersService {
   }
 
   async findOrCreateUser(
-    { email, avatar, userName }: User,
+    { email, avatar }: CreateUserDto,
     transactionEntityManager: EntityManager,
   ) {
     const currentUser = await this.userRepository.findOne({
@@ -52,7 +67,7 @@ export class UsersService {
       const user = transactionEntityManager.create(User);
 
       user.avatar = avatar;
-      user.userName = userName;
+      user.userName = await this.createNickname();
       user.email = email;
 
       return transactionEntityManager.save(user);
@@ -62,12 +77,12 @@ export class UsersService {
   }
 
   async findOneByUserName(userName: string) {
-    const user = await this.userRepository.findOne({ where: { userName } }); // Reuse the findOneUser method to include error handling
+    const user = await this.userRepository.findOne({ where: { userName } });
     return user;
   }
 
   async updateUser(userName: string, updateUser: Partial<User>): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { userName } }); // Reuse the findOneUser method to include error handling
+    const user = await this.userRepository.findOne({ where: { userName } });
     const updatedUser = Object.assign(user, updateUser);
     return this.userRepository.save(updatedUser);
   }

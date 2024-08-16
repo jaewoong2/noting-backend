@@ -34,7 +34,7 @@ function attachPipes(app: INestApplication) {
     origin: [
       // '*',
       // 'https://prlc.kr',
-      // 'http://localhost:3000',
+      'http://localhost:3000',
       'chrome-extension://inpiomoiklpedpkniafpibekgkggmdph',
     ],
     credentials: true,
@@ -47,12 +47,25 @@ function attachPipes(app: INestApplication) {
     .setDescription('Swagger study API description')
     .setVersion('1.0.0')
     .addTag('swagger')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        name: 'JWT',
+        in: 'header',
+      },
+      'access-token',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
   // Swagger UI에 대한 path를 연결함
   // .setup('swagger ui endpoint', app, swagger_document)
-  SwaggerModule.setup('api/swagger', app, document);
+  SwaggerModule.setup('api/swagger', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  });
 }
 
 if (process.env.NODE_ENV === 'local') {

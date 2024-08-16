@@ -34,17 +34,33 @@ export class AuthController {
 
   @Post('signup')
   async signUp(
+    @Req() req: Request,
     @Body()
     signUpDto: {
+      email: string;
       avartar: string;
       userName: string;
     },
   ) {
-    return this.authService.signUp(
-      signUpDto.avartar,
-      signUpDto.userName,
-      'google',
-    );
+    const isChromeExtensionRequest =
+      req.headers['x-chrome-extension-id'] ===
+      'inpiomoiklpedpkniafpibekgkggmdph';
+
+    if (!isChromeExtensionRequest) {
+      throw new UnauthorizedException(
+        'This endpoint can only be accessed from the Chrome extension.',
+      );
+    }
+
+    const result = await this.authService.googleLogin({
+      user: {
+        email: signUpDto.email,
+        userName: signUpDto.userName,
+        photo: signUpDto.avartar,
+      },
+    });
+
+    return result;
   }
 
   @Post('login')
