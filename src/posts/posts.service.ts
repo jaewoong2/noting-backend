@@ -75,7 +75,7 @@ export class PostsService {
     const [posts, total] = await this.postRepository.findAndCount({
       take: pageOptionsDto.take,
       skip: pageOptionsDto.skip,
-      relations: ['user', 'likes', 'comments'],
+      relations: ['user', 'likes', 'comments', 'tags'],
       order: { order: 'ASC', createdAt: 'DESC' },
       where: where.where,
     });

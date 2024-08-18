@@ -12,9 +12,9 @@ export class PageOptionsDto {
   @IsOptional()
   readonly take?: number = 10;
 
-  // @Type(() => String)
-  // @IsOptional()
-  // userId?: string = '';
+  @Type(() => String)
+  @IsOptional()
+  userId?: string = '';
 
   @Type(() => String)
   @IsOptional()

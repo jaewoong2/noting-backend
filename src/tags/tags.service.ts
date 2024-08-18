@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Tag } from './entities/tag.entity';
 import { Repository } from 'typeorm';
+import { plainToInstance } from 'class-transformer';
+import { FindUserTagResponseDto } from './dto/find-users-tag.dto';
 
 @Injectable()
 export class TagsService {
@@ -9,6 +11,14 @@ export class TagsService {
     @InjectRepository(Tag)
     private readonly tagRepository: Repository<Tag>,
   ) {}
+
+  async findAllUserTags(userId: string) {
+    const result = await this.tagRepository.find({
+      where: { posts: { user: { id: userId } } },
+    });
+
+    return plainToInstance(FindUserTagResponseDto, result, {});
+  }
 
   async findOrCreateTag(tagName: string): Promise<Tag> {
     // 먼저 태그가 존재하는지 확인

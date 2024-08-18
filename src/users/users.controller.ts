@@ -40,7 +40,10 @@ export class UsersController {
 
   @Get('/:userName')
   async find(@Param('userName') userName: string) {
-    const user = await this.usersService.findOneByUserName(userName);
+    console.log(userName);
+    const user = await this.usersService.findOneByUserName(
+      decodeURIComponent(userName),
+    );
     return user;
   }
 }

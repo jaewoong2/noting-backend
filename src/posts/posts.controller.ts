@@ -32,19 +32,30 @@ export class PostsController {
 
   @Post()
   @ApiOkResponse({ type: CreatePostResponseDto })
-  @ApiOperation({ summary: 'Create User' })
+  @ApiOperation({ summary: '응답을 저장합니다' })
   create(@Body() createPostDto: CreatePostDto) {
     return this.postsService.create(createPostDto);
   }
 
   @Get('user')
-  @ApiOperation({ summary: 'Create User' })
+  @ApiOperation({ summary: '유저가 저장한 값을 불러옵니다' })
   @ApiOkResponse({ type: GetPostResponse })
   @SuccessMessage()
   async find(@Query() query: PageOptionsDto) {
+    const findOptions: { id?: string; email?: string } = {};
+
+    if (query.userId) {
+      findOptions.id = query.userId;
+    }
+
+    if (query.userEmail) {
+      findOptions.email = query.userEmail;
+    }
+
     const result = await this.postsService.paginate(query, {
-      where: { user: { email: query.userEmail }, is_public: true },
+      where: { user: { id: query.userId }, is_public: true },
     });
+
     return result;
   }
 
