@@ -38,7 +38,7 @@ export class AuthController {
     @Body()
     signUpDto: {
       email: string;
-      avartar: string;
+      avatar: string;
       userName: string;
     },
   ) {
@@ -56,7 +56,7 @@ export class AuthController {
       user: {
         email: signUpDto.email,
         userName: signUpDto.userName,
-        photo: signUpDto.avartar,
+        photo: signUpDto.avatar,
       },
     });
 
