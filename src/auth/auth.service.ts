@@ -20,23 +20,24 @@ export class AuthService {
     email: string,
     fullName: string,
     avatar: string,
-    provider: 'google',
   ): Promise<User> {
     try {
       const foundUser = await this.userRepository.findOne({
         where: { email },
       });
+
       if (foundUser) return foundUser;
 
-      const newUser = this.userRepository.save({
+      const result = await this.usersService.createUser({
         email,
         userName: fullName,
         avatar,
-        provider,
       });
+      console.log(result);
 
-      return newUser;
+      return result;
     } catch (error) {
+      console.error(error);
       throw new Error('사용자를 찾거나 생성하는데 실패하였습니다');
     }
   }
@@ -45,12 +46,8 @@ export class AuthService {
     const { email, firstName, lastName, photo, userName } = req.user;
 
     const fullName = userName ? userName : firstName + lastName;
-    const user: User = await this.findByEmailOrSave(
-      email,
-      fullName,
-      photo,
-      'google',
-    ); // 이메일로 가입된 회원을 찾고, 없다면 회원가입
+
+    const user: User = await this.findByEmailOrSave(email, fullName, photo); // 이메일로 가입된 회원을 찾고, 없다면 회원가입
 
     // JWT 토큰에 포함될 payload
     const payload = {
@@ -60,6 +57,8 @@ export class AuthService {
     };
 
     return {
+      id: user.id,
+      userName: user.userName,
       access_token: this.jwtService.sign(payload),
     };
   }
@@ -78,6 +77,7 @@ export class AuthService {
     const result = await this.usersService.createUser(user);
 
     const payload = { userName: user.userName, id: user.id, email: user.email };
+
     return {
       ...result,
       access_token: this.jwtService.sign(payload),
