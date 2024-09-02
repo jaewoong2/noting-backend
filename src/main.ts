@@ -33,9 +33,9 @@ function attachPipes(app: INestApplication) {
   app.enableCors({
     origin: [
       // '*',
-      // 'https://prlc.kr',
+      'https://noting.prlc.kr',
       'http://localhost:3000',
-      'chrome-extension://inpiomoiklpedpkniafpibekgkggmdph',
+      'chrome-extension://*',
     ],
     credentials: true,
     exposedHeaders: ['*'], // * 사용할 헤더 추가.

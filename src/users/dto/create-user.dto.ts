@@ -1,5 +1,5 @@
 // src/users/dto/create-user.dto.ts
-import { IsString, IsNotEmpty, IsEmail, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
@@ -12,7 +12,7 @@ export class CreateUserDto {
   @IsNotEmpty()
   userName?: string;
 
-  @IsEmail()
+  @IsString()
   @IsNotEmpty()
   email: string;
 }

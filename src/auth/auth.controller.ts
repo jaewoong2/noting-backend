@@ -42,15 +42,15 @@ export class AuthController {
       userName: string;
     },
   ) {
-    const isChromeExtensionRequest =
-      req.headers['x-chrome-extension-id'] ===
-      'inpiomoiklpedpkniafpibekgkggmdph';
+    // const isChromeExtensionRequest =
+    //   req.headers['x-chrome-extension-id'] ===
+    //   'inpiomoiklpedpkniafpibekgkggmdph';
 
-    if (!isChromeExtensionRequest) {
-      throw new UnauthorizedException(
-        'This endpoint can only be accessed from the Chrome extension.',
-      );
-    }
+    // if (!isChromeExtensionRequest) {
+    //   throw new UnauthorizedException(
+    //     'This endpoint can only be accessed from the Chrome extension.',
+    //   );
+    // }
 
     const result = await this.authService.googleLogin({
       user: {

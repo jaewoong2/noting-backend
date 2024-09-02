@@ -1,7 +1,7 @@
 // src/users/users.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, FindOneOptions, Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { generateRandomNickname } from 'src/core/utils/create-nickname';
@@ -13,13 +13,10 @@ export class UsersService {
     private userRepository: Repository<User>,
   ) {}
 
-  async findById(
-    userId: string,
-    options?: Omit<FindOneOptions<User>, 'where'>,
-  ) {
+  async findById(userId: string) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
-      ...options,
+      relations: ['likes'],
     });
 
     return user;

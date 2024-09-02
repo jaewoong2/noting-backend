@@ -65,8 +65,8 @@ jobs:
           # push it to ECR so that it can
           # be deployed to ECS...
           BUILD_ARGS=$(awk -F= '{print "--build-arg " $1 "=" $2}' .env | xargs)
-          docker build $BUILD_ARGS -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker-compose build
+          docker-compose push
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
       - name: Delete Artifact
@@ -80,4 +80,4 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
         run: |
           aws lambda update-function-code --function-name $AWS_FUNCTION_NAME \
-            --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+            --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:latest

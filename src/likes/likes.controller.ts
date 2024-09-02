@@ -20,7 +20,9 @@ export class LikesController {
   @Get('/user')
   @UseGuards(JwtAuthGuard)
   getMyLikes(@Req() { user }: { user: User }) {
-    return this.likeService.getUserLikes(user.id);
+    return this.likeService.paginate(undefined, {
+      where: { user: { id: user.id } },
+    });
   }
 
   @Get('/user/:userId')

@@ -8,7 +8,7 @@ import { ApiProperty } from '@nestjs/swagger';
 @Entity()
 export class User extends Basic {
   @ApiProperty()
-  @Column({})
+  @Column()
   avatar: string;
 
   @ApiProperty()
@@ -28,7 +28,7 @@ export class User extends Basic {
   posts: Post[];
 
   @ApiProperty()
-  @OneToMany(() => Like, (like) => like.post, { cascade: true })
+  @OneToMany(() => Like, (like) => like.user, { cascade: true })
   likes: Like[];
 
   @ApiProperty()

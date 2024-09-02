@@ -40,7 +40,10 @@ export class Post extends Basic {
   @JoinTable()
   likes: Like[];
 
-  @OneToMany(() => Comment, (comment) => comment.post)
+  @OneToMany(() => Comment, (comment) => comment.post, {
+    cascade: true,
+    nullable: true,
+  })
   comments: Comment[];
 
   @ManyToMany(() => Tag, (tag) => tag.posts, { cascade: true })

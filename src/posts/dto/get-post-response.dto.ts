@@ -39,7 +39,6 @@ export class GetPostResponseDto {
 }
 
 export class CreatePostResponseDto {
-  data: {
-    id: string;
-  };
+  id: string;
+  user: UserDto;
 }
